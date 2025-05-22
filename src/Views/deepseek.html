@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFL Player Prediction</title>
+    <style>
+        :root {
+            --primary-color: #014e7e;
+            --secondary-color: #e31837;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        .app-description {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            font-size: 1.1rem;
+        }
+        
+        .prediction-form {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .submit-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            display: block;
+            margin: 20px auto 0;
+        }
+        
+        .submit-btn:hover {
+            background-color: #c0102e;
+        }
+        
+        .results {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .results h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .prediction-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .confidence {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>AFL Player Performance Predictor</h1>
+            <p class="app-description">
+                Enter player attributes to predict performance metrics. Our machine learning model will analyze the data and provide insights.
+            </p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <form id="predictionForm" class="prediction-form">
+            <h2>Player Attributes</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="Player">Player</label>
+                    <input type="text" id="Player" name="Player" placeholder="Enter Player Name" required>
+                </div>
+                <div class="form-group"><label for="TM">TM</label><input type="text" id="TM" name="TM" placeholder="Enter TM value" required></div>
+                <div class="form-group"><label for="GM">GM</label><input type="number" id="GM" name="GM" placeholder="Enter GM value" required></div>
+                <div class="form-group"><label for="KI">KI</label><input type="number" id="KI" name="KI" placeholder="Enter KI value" required></div>
+                <div class="form-group"><label for="MK">MK</label><input type="number" id="MK" name="MK" placeholder="Enter MK value" required></div>
+                <div class="form-group"><label for="HB">HB</label><input type="number" id="HB" name="HB" placeholder="Enter HB value" required></div>
+                <div class="form-group"><label for="DI">DI</label><input type="number" id="DI" name="DI" placeholder="Enter DI value" required></div>
+                <div class="form-group"><label for="GL">GL</label><input type="number" id="GL" name="GL" placeholder="Enter GL value" required></div>
+                <div class="form-group"><label for="BH">BH</label><input type="number" id="BH" name="BH" placeholder="Enter BH value" required></div>
+                <div class="form-group"><label for="HO">HO</label><input type="number" id="HO" name="HO" placeholder="Enter HO value" required></div>
+                <div class="form-group"><label for="TK">TK</label><input type="number" id="TK" name="TK" placeholder="Enter TK value" required></div>
+                <div class="form-group"><label for="RB">RB</label><input type="number" id="RB" name="RB" placeholder="Enter RB value" required></div>
+                <div class="form-group"><label for="IF">IF</label><input type="number" id="IF" name="IF" placeholder="Enter IF value" required></div>
+                <div class="form-group"><label for="CL">CL</label><input type="number" id="CL" name="CL" placeholder="Enter CL value" required></div>
+                <div class="form-group"><label for="CG">CG</label><input type="number" id="CG" name="CG" placeholder="Enter CG value" required></div>
+                <div class="form-group"><label for="FF">FF</label><input type="number" id="FF" name="FF" placeholder="Enter FF value" required></div>
+                <div class="form-group"><label for="FA">FA</label><input type="number" id="FA" name="FA" placeholder="Enter FA value" required></div>
+                <div class="form-group"><label for="BR">BR</label><input type="number" id="BR" name="BR" placeholder="Enter BR value" required></div>
+                <div class="form-group"><label for="CP">CP</label><input type="number" id="CP" name="CP" placeholder="Enter CP value" required></div>
+                <div class="form-group"><label for="UP">UP</label><input type="number" id="UP" name="UP" placeholder="Enter UP value" required></div>
+                <div class="form-group"><label for="CM">CM</label><input type="number" id="CM" name="CM" placeholder="Enter CM value" required></div>
+                <div class="form-group"><label for="MI">MI</label><input type="number" id="MI" name="MI" placeholder="Enter MI value" required></div>
+                <div class="form-group"><label for="OnePercenters">1%</label><input type="number" id="OnePercenters" name="1%" placeholder="Enter 1% value" required></div>
+                <div class="form-group"><label for="BO">BO</label><input type="number" id="BO" name="BO" placeholder="Enter BO value" required></div>
+                <div class="form-group"><label for="GA">GA</label><input type="number" id="GA" name="GA" placeholder="Enter GA value" required></div>
+            </div>
+        
+            <div class="form-group">
+                <label for="predictionField">What to Predict</label>
+                <select id="predictionField" name="predictionField" required>
+                    <option value="">Select a field to predict</option>
+                    <option value="goals">Goals</option>
+                    <option value="disposals">Disposals</option>
+                    <option value="tackles">Tackles</option>
+                    <option value="marks">Marks</option>
+                    <option value="rating">Player Rating</option>
+                </select>
+            </div>
+        
+            <button type="submit" class="submit-btn">Predict Performance</button>
+        </form>
+        
+        
+        <div id="results" class="results">
+            <h2>Prediction Results</h2>
+            <div id="predictionOutput" class="prediction-value">--</div>
+            <div id="confidenceLevel" class="confidence">Confidence: --%</div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>AFL Player Performance Predictor &copy; 2025 | Machine Learning Powered</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Here you would normally send the data to your backend
+            // For this demo, we'll just show the results section with mock data
+            
+            // Collect all form data
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            
+            // Mock prediction result (replace with actual API call)
+            const mockPredictions = {
+                goals: { value: Math.floor(Math.random() * 10), confidence: Math.floor(Math.random() * 30) + 70 },
+                disposals: { value: Math.floor(Math.random() * 30) + 10, confidence: Math.floor(Math.random() * 30) + 70 },
+                tackles: { value: Math.floor(Math.random() * 15), confidence: Math.floor(Math.random() * 30) + 70 },
+                marks: { value: Math.floor(Math.random() * 12), confidence: Math.floor(Math.random() * 30) + 70 },
+                rating: { value: (Math.random() * 20 + 70).toFixed(1), confidence: Math.floor(Math.random() * 30) + 70 }
+            };
+            
+            const predictionType = data.predictionField;
+            const result = mockPredictions[predictionType] || { value: 'N/A', confidence: 'N/A' };
+            
+            // Display results
+            document.getElementById('predictionOutput').textContent = result.value;
+            document.getElementById('confidenceLevel').textContent = `Confidence: ${result.confidence}%`;
+            document.getElementById('results').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            
+            // In a real app, you would make an API call here:
+            /*
+            fetch('/api/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('predictionOutput').textContent = data.prediction;
+                document.getElementById('confidenceLevel').textContent = `Confidence: ${data.confidence}%`;
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error making the prediction. Please try again.');
+            });
+            */
+        });
+    </script>
+</body>
+</html>
