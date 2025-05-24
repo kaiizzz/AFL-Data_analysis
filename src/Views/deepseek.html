@@ -161,17 +161,11 @@
         <form id="predictionForm" class="prediction-form">
             <h2>Player Attributes</h2>
             <div class="form-grid">
-                <div class="form-group">
-                    <label for="Player">Player</label>
-                    <input type="text" id="Player" name="Player" placeholder="Enter Player Name" required>
-                </div>
-                <div class="form-group"><label for="TM">TM</label><input type="text" id="TM" name="TM" placeholder="Enter TM value" required></div>
                 <div class="form-group"><label for="GM">GM</label><input type="number" id="GM" name="GM" placeholder="Enter GM value" required></div>
                 <div class="form-group"><label for="KI">KI</label><input type="number" id="KI" name="KI" placeholder="Enter KI value" required></div>
                 <div class="form-group"><label for="MK">MK</label><input type="number" id="MK" name="MK" placeholder="Enter MK value" required></div>
                 <div class="form-group"><label for="HB">HB</label><input type="number" id="HB" name="HB" placeholder="Enter HB value" required></div>
                 <div class="form-group"><label for="DI">DI</label><input type="number" id="DI" name="DI" placeholder="Enter DI value" required></div>
-                <div class="form-group"><label for="GL">GL</label><input type="number" id="GL" name="GL" placeholder="Enter GL value" required></div>
                 <div class="form-group"><label for="BH">BH</label><input type="number" id="BH" name="BH" placeholder="Enter BH value" required></div>
                 <div class="form-group"><label for="HO">HO</label><input type="number" id="HO" name="HO" placeholder="Enter HO value" required></div>
                 <div class="form-group"><label for="TK">TK</label><input type="number" id="TK" name="TK" placeholder="Enter TK value" required></div>
@@ -221,60 +215,53 @@
     </footer>
     
     <script>
-        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Here you would normally send the data to your backend
-            // For this demo, we'll just show the results section with mock data
+            // Show loading state
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Predicting...';
             
-            // Collect all form data
-            const formData = new FormData(this);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-            
-            // Mock prediction result (replace with actual API call)
-            const mockPredictions = {
-                goals: { value: Math.floor(Math.random() * 10), confidence: Math.floor(Math.random() * 30) + 70 },
-                disposals: { value: Math.floor(Math.random() * 30) + 10, confidence: Math.floor(Math.random() * 30) + 70 },
-                tackles: { value: Math.floor(Math.random() * 15), confidence: Math.floor(Math.random() * 30) + 70 },
-                marks: { value: Math.floor(Math.random() * 12), confidence: Math.floor(Math.random() * 30) + 70 },
-                rating: { value: (Math.random() * 20 + 70).toFixed(1), confidence: Math.floor(Math.random() * 30) + 70 }
-            };
-            
-            const predictionType = data.predictionField;
-            const result = mockPredictions[predictionType] || { value: 'N/A', confidence: 'N/A' };
-            
-            // Display results
-            document.getElementById('predictionOutput').textContent = result.value;
-            document.getElementById('confidenceLevel').textContent = `Confidence: ${result.confidence}%`;
-            document.getElementById('results').style.display = 'block';
-            
-            // Scroll to results
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-            
-            // In a real app, you would make an API call here:
-            /*
-            fetch('/api/predict', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('predictionOutput').textContent = data.prediction;
-                document.getElementById('confidenceLevel').textContent = `Confidence: ${data.confidence}%`;
+            try {
+                // Collect all form data
+                const formData = new FormData(this);
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+                
+                // Send to backend
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Prediction failed');
+                }
+                
+                const result = await response.json();
+                
+                // Display results
+                document.getElementById('predictionOutput').textContent = result.prediction;
+                document.getElementById('confidenceLevel').textContent = `Confidence: ${result.confidence}%`;
                 document.getElementById('results').style.display = 'block';
+                
+                // Scroll to results
                 document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-            })
-            .catch(error => {
+                
+            } catch (error) {
                 console.error('Error:', error);
                 alert('There was an error making the prediction. Please try again.');
-            });
-            */
+            } finally {
+                // Reset button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Predict Performance';
+            }
         });
     </script>
 </body>
